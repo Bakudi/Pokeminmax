@@ -96,3 +96,22 @@ ATAQUES_POR_TIPO = {
     "Dragón": [dragoaliento, pulso_dragon, cometa_draco],
 }
 
+__all__ = [
+    "placaje", "golpe_cuerpo", "giga_impacto",
+    "ascuas", "lanzallamas", "llamarada",
+    "burbuja", "pistola_agua", "hidrobomba",
+    "latigo_cepa", "hoja_afilada", "rayo_solar",
+    "impactrueno", "chispa", "trueno",
+    "nieve_polvo", "rayo_hielo", "ventisca",
+    "golpe_karate", "ultrapuño", "abocajarro",
+    "picotazo_venenoso", "acido", "bomba_lodo",
+    "bofeton_lodo", "excavar", "terremoto",
+    "ataque_ala", "tornado", "pajaro_osado",
+    "confusion", "psicoonda", "psiquico",
+    "picadura", "tijera_x", "ida_y_vuelta",
+    "lanzarrocas", "avalancha", "roca_afilada",
+    "lenguetazo", "sombra_vil", "bola_sombra",
+    "dragoaliento", "pulso_dragon", "cometa_draco",
+    "ATAQUES_POR_TIPO"
+]
+
