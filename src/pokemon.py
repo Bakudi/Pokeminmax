@@ -3,58 +3,58 @@ from ataques import *
 
 #sets basicos
 #set 1
-bulbasaur = Pokemon("Bulbasaur", "Planta", 100, [latigo_cepa, placaje,picotazo_venenoso])
-charmander = Pokemon("Charmander", "Fuego", 100, [ascuas, placaje,ataque_ala])
-squirtle = Pokemon("Squirtle", "Agua", 100, [pistola_agua, placaje,golpe_karate])
+bulbasaur = Pokemon("Bulbasaur", "Planta", 170, [latigo_cepa, placaje,picotazo_venenoso])
+charmander = Pokemon("Charmander", "Fuego", 120, [ascuas, placaje,ataque_ala])
+squirtle = Pokemon("Squirtle", "Agua", 150, [pistola_agua, placaje,golpe_karate])
 pikachu = Pokemon("Pikachu", "Eléctrico", 100, [impactrueno, placaje, confusion])
 
 #set 2
-voltorb = Pokemon("Voltorb", "Eléctrico", 100, [impactrueno, placaje, ascuas])
-seel = Pokemon("Seel", "Hielo", 100, [nieve_polvo, placaje, burbuja])
-pidgey = Pokemon("Pidgey", "Volador", 100, [ataque_ala, placaje, bofeton_lodo])
-Abra = Pokemon("Abra", "Psíquico", 100, [confusion, placaje, lanzarrocas])
+voltorb = Pokemon("Voltorb", "Eléctrico", 120, [impactrueno, placaje, ascuas])
+seel = Pokemon("Seel", "Hielo", 140, [nieve_polvo, placaje, burbuja])
+pidgey = Pokemon("Pidgey", "Volador", 120, [ataque_ala, placaje, bofeton_lodo])
+Abra = Pokemon("Abra", "Psíquico", 110, [confusion, placaje, lanzarrocas])
 
 #set 3
-jigglypuff = Pokemon("Jigglypuff", "Normal", 100, [placaje, confusion, bofeton_lodo])
-geodude = Pokemon("Geodude", "Roca", 100, [lanzarrocas, placaje, golpe_karate])
+jigglypuff = Pokemon("Jigglypuff", "Normal", 160, [placaje, confusion, bofeton_lodo])
+geodude = Pokemon("Geodude", "Roca", 160, [lanzarrocas, placaje, golpe_karate])
 weedle = Pokemon("Weedle", "Bicho", 100, [picadura, placaje, picotazo_venenoso])
-ekans = Pokemon("Ekans", "Veneno", 100, [picotazo_venenoso, placaje, ascuas])
+ekans = Pokemon("Ekans", "Veneno", 120, [picotazo_venenoso, placaje, ascuas])
 
 #sets medios
 #set 1
-jinx = Pokemon("Jynx", "Hielo", 100, [rayo_hielo, golpe_cuerpo, sombra_vil])
-magmar = Pokemon("Magmar", "Fuego", 100, [lanzallamas, golpe_cuerpo, bola_sombra])
-electabuzz = Pokemon("Electabuzz", "Eléctrico", 100, [chispa, golpe_cuerpo, pulso_dragon])
-scyther = Pokemon("Scyther", "Bicho", 100, [tijera_x, golpe_cuerpo, tornado])
+jinx = Pokemon("Jynx", "Hielo", 200, [rayo_hielo, golpe_cuerpo, sombra_vil])
+magmar = Pokemon("Magmar", "Fuego", 210, [lanzallamas, golpe_cuerpo, bola_sombra])
+electabuzz = Pokemon("Electabuzz", "Eléctrico", 200, [chispa, golpe_cuerpo, pulso_dragon])
+scyther = Pokemon("Scyther", "Bicho", 190, [tijera_x, golpe_cuerpo, tornado])
 
 #set 2
-omanyte = Pokemon("Omanyte", "Roca", 100, [pistola_agua, rayo_hielo, avalancha])
-kabutops = Pokemon("Kabutops", "Roca", 100, [lanzarrocas, pistola_agua, tijera_x])
-aerodactyl = Pokemon("Aerodactyl", "Roca", 100, [avalancha, tornado, excavar])
-snorlax = Pokemon("Snorlax", "Normal", 100, [golpe_cuerpo, excavar, ultrapuño])
+omanyte = Pokemon("Omanyte", "Roca", 220, [pistola_agua, rayo_hielo, avalancha])
+kabutops = Pokemon("Kabutops", "Roca", 190, [lanzarrocas, pistola_agua, tijera_x])
+aerodactyl = Pokemon("Aerodactyl", "Roca", 190, [avalancha, tornado, excavar])
+snorlax = Pokemon("Snorlax", "Normal", 240, [golpe_cuerpo, excavar, ultrapuño])
 
 #set 3
-chansey = Pokemon("Chansey", "Normal", 100, [psicoonda, golpe_cuerpo, pulso_dragon])
-gyarados = Pokemon("Gyarados", "Agua", 100, [pistola_agua, golpe_cuerpo, tornado])
-jolteon = Pokemon("Jolteon", "Eléctrico", 100, [tijera_x, golpe_cuerpo, chispa])
-arcanine = Pokemon("Arcanine", "Fuego", 100, [lanzallamas, golpe_cuerpo, excavar])
+chansey = Pokemon("Chansey", "Normal", 250, [psicoonda, golpe_cuerpo, pulso_dragon])
+gyarados = Pokemon("Gyarados", "Agua", 210, [pistola_agua, golpe_cuerpo, tornado])
+jolteon = Pokemon("Jolteon", "Eléctrico", 200, [tijera_x, golpe_cuerpo, chispa])
+arcanine = Pokemon("Arcanine", "Fuego", 210, [lanzallamas, golpe_cuerpo, excavar])
 
 #sets avanzados
 #set 1
-articuno = Pokemon("Articuno", "Hielo", 100, [hidrobomba, ventisca, pajaro_osado])
-zapdos = Pokemon("Zapdos", "Eléctrico", 100, [trueno, llamarada, pajaro_osado])
-moltres = Pokemon("Moltres", "Fuego", 100, [llamarada, pulso_dragon, pajaro_osado])
-mewtwo = Pokemon("Mewtwo", "Psíquico", 100, [psiquico, abocajarro, bola_sombra])
+articuno = Pokemon("Articuno", "Hielo", 350, [hidrobomba, ventisca, pajaro_osado])
+zapdos = Pokemon("Zapdos", "Eléctrico", 400, [trueno, llamarada, pajaro_osado])
+moltres = Pokemon("Moltres", "Fuego", 390, [llamarada, pulso_dragon, pajaro_osado])
+mewtwo = Pokemon("Mewtwo", "Psíquico", 400, [psiquico, abocajarro, bola_sombra])
 #set 2
-gengar = Pokemon("Gengar", "Fantasma", 100, [bomba_lodo, bola_sombra, trueno])
-alakazam = Pokemon("Alakazam", "Psíquico", 100, [psiquico, llamarada, rayo_solar])
-golem = Pokemon("Golem", "Roca", 100, [roca_afilada, terremoto, abocajarro])
-machamp = Pokemon("Machamp", "Lucha", 100, [trueno, abocajarro, roca_afilada])
+gengar = Pokemon("Gengar", "Fantasma", 380, [bomba_lodo, bola_sombra, trueno])
+alakazam = Pokemon("Alakazam", "Psíquico", 360, [psiquico, llamarada, rayo_solar])
+golem = Pokemon("Golem", "Roca", 410, [roca_afilada, terremoto, abocajarro])
+machamp = Pokemon("Machamp", "Lucha", 390, [trueno, abocajarro, roca_afilada])
 #set 3
-dragonite = Pokemon("Dragonite", "Dragón", 100, [trueno, pajaro_osado, cometa_draco])
-venasaur = Pokemon("Venusaur", "Planta", 100, [rayo_solar, bomba_lodo, terremoto])
-charizard = Pokemon("Charizard", "Fuego", 100, [llamarada, pajaro_osado, cometa_draco])
-blastoise = Pokemon("Blastoise", "Agua", 100, [hidrobomba, ventisca, giga_impacto])
+dragonite = Pokemon("Dragonite", "Dragón", 400, [trueno, pajaro_osado, cometa_draco])
+venasaur = Pokemon("Venusaur", "Planta", 410, [rayo_solar, bomba_lodo, terremoto])
+charizard = Pokemon("Charizard", "Fuego", 380, [llamarada, pajaro_osado, cometa_draco])
+blastoise = Pokemon("Blastoise", "Agua", 400, [hidrobomba, ventisca, giga_impacto])
 
 POKEMONES = {
     "bulbasaur": bulbasaur,
