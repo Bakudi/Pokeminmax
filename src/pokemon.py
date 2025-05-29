@@ -68,7 +68,32 @@ POKEMONES = {
     "jigglypuff": jigglypuff,
     "geodude": geodude,
     "weedle": weedle,
-    "ekans": ekans
+    "ekans": ekans,
+    "jinx": jinx,
+    "magmar": magmar,
+    "electabuzz": electabuzz,
+    "scyther": scyther,
+    "omanyte": omanyte,
+    "kabutops": kabutops,
+    "aerodactyl": aerodactyl,
+    "snorlax": snorlax,
+    "chansey": chansey,
+    "gyarados": gyarados,
+    "jolteon": jolteon,
+    "arcanine": arcanine,
+    "articuno": articuno,
+    "zapdos": zapdos,
+    "moltres": moltres,
+    "mewtwo": mewtwo,
+    "gengar": gengar,
+    "alakazam": alakazam,
+    "golem": golem,
+    "machamp": machamp,
+    "dragonite": dragonite,
+    "venasaur": venasaur,
+    "charizard": charizard,
+    "blastoise": blastoise
+    
     
 }
 
