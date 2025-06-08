@@ -291,3 +291,25 @@ class Pokemon:
         tipos_str = "/".join(self.tipos)
         ataques_str = ", ".join(ataque.nombre for ataque in self.ataques)
         return f"{self.nombre} ({tipos_str}, Etapa {self.etapa}) - Ataques: {ataques_str}"
+
+class Entrenador:
+    """
+    Representa a un entrenador con un nombre y una lista de Pokémon.
+    """
+    def __init__(self, nombre, pokemones):
+        self.nombre = nombre
+        self.pokemones = pokemones
+        self.indice_activo = 0  # Siempre inicia con el primer Pokémon
+
+    def pokemon_activo(self):
+        return self.pokemones[self.indice_activo]
+
+    def tiene_pokemon_vivo(self):
+        return any(p.ps > 0 for p in self.pokemones)
+
+    def cambiar_pokemon(self):
+        for i, p in enumerate(self.pokemones):
+            if p.ps > 0:
+                self.indice_activo = i
+                return True
+        return False  # Todos están debilitados
