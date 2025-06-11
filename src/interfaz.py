@@ -4,7 +4,7 @@ import os
 import unicodedata
 
 from estructuras import Entrenador
-from combate import turno
+from combate import turno, calcular_danio
 from minimax import elegir_mejor_ataque
 from pokemon import POKEMONES
 
@@ -16,7 +16,6 @@ FONDO_BATALLA = "#F8F8F8"
 COLOR_TEXTO = "black"
 COLOR_BOTON = "#FFD700"
 COLOR_BOTON_TEXTO = "black"
-
 
 class JuegoPokemon:
     def __init__(self, root):
@@ -46,13 +45,11 @@ class JuegoPokemon:
 
     def pantalla_seleccion_equipos(self):
         self._limpiar_pantalla()
-
         self.nombres_pokemon = list(POKEMONES.keys())
         self.indice_actual = 0
         self.seleccion_jugador = []
         self.seleccion_ia = []
         self.seleccion_actual = []
-
         self.fase = "jugador"
         self.pokemon_num = 1
 
@@ -104,31 +101,23 @@ class JuegoPokemon:
         base_dir = os.path.dirname(__file__)
         ruta = os.path.join(base_dir, "..", "imagenes", f"{nombre_archivo}.png")
         ruta = os.path.abspath(ruta)
-
         if os.path.exists(ruta):
             img = Image.open(ruta).resize((150, 150), Image.Resampling.LANCZOS)
-            img_tk = ImageTk.PhotoImage(img)
-            if para_combate:
-                return img_tk
-            else:
-                self.imagen_pokemon = img_tk
-                self.label_imagen.config(image=self.imagen_pokemon, text="")
-                self.label_imagen.image = self.imagen_pokemon
-        else:
-            if not para_combate:
-                self.label_imagen.config(image="", text="Sin imagen")
-            return None
+            return ImageTk.PhotoImage(img)
+        return None
 
     def cambiar_pokemon(self, delta):
         self.indice_actual = (self.indice_actual + delta) % len(self.nombres_pokemon)
         nuevo_nombre = self.nombres_pokemon[self.indice_actual]
         self.label_pokemon.config(text=nuevo_nombre)
-        self._mostrar_imagen_pokemon(nuevo_nombre)
+        img = self._mostrar_imagen_pokemon(nuevo_nombre)
+        if img:
+            self.label_imagen.config(image=img, text="")
+            self.label_imagen.image = img
 
     def confirmar_pokemon(self):
         seleccionado = self.nombres_pokemon[self.indice_actual]
         self.seleccion_actual.append(POKEMONES[seleccionado])
-
         if self.pokemon_num < 4:
             self.pokemon_num += 1
             self.titulo_seleccion.config(
@@ -145,14 +134,12 @@ class JuegoPokemon:
                 self.seleccion_ia = self.seleccion_actual.copy()
                 self.iniciar_combate()
                 return
-
         self.indice_actual = 0
         self.label_pokemon.config(text=self.nombres_pokemon[self.indice_actual])
-        self._mostrar_imagen_pokemon(self.nombres_pokemon[self.indice_actual])
+        self.cambiar_pokemon(0)
 
     def iniciar_combate(self):
         self._limpiar_pantalla()
-
         self.jugador = Entrenador("Jugador", self.seleccion_jugador)
         self.ia = Entrenador("IA", self.seleccion_ia)
         self.pj = self.jugador.pokemon_activo()
@@ -161,79 +148,85 @@ class JuegoPokemon:
         self.frame_combate = tk.Frame(self.root, bg=FONDO_BATALLA)
         self.frame_combate.pack(fill="both", expand=True)
 
-        # Zona superior: imágenes y nombres
-        self.canvas_combate = tk.Canvas(self.frame_combate, bg=FONDO_BATALLA, highlightthickness=0)
+        self.label_turno = tk.Label(self.frame_combate, text="Es tu turno para atacar", font=FUENTE_NORMAL,
+                                    bg=FONDO_BATALLA, fg=COLOR_TEXTO)
+        self.label_turno.pack(pady=5)
+
+        self.canvas_combate = tk.Frame(self.frame_combate, bg=FONDO_BATALLA)
         self.canvas_combate.place(relx=0.5, rely=0.4, anchor="center")
 
-        self.img_jugador = self._mostrar_imagen_pokemon(self.pj.nombre, para_combate=True)
-        self.img_ia = self._mostrar_imagen_pokemon(self.ia_poke.nombre, para_combate=True)
-
-        self.img_jugador_label = tk.Label(self.canvas_combate, image=self.img_jugador, bg=FONDO_BATALLA)
+        self.img_jugador_label = tk.Label(self.canvas_combate, bg=FONDO_BATALLA)
         self.img_jugador_label.grid(row=1, column=0, padx=50)
-
-        self.img_ia_label = tk.Label(self.canvas_combate, image=self.img_ia, bg=FONDO_BATALLA)
+        self.img_ia_label = tk.Label(self.canvas_combate, bg=FONDO_BATALLA)
         self.img_ia_label.grid(row=1, column=1, padx=50)
 
-        self.info_jugador = tk.Label(self.canvas_combate, text=f"{self.pj.nombre} - {self.pj.ps} PS",
-                                     font=("Press Start 2P", 8), bg=FONDO_BATALLA, fg=COLOR_TEXTO)
+        self.info_jugador = tk.Label(self.canvas_combate, font=("Press Start 2P", 8), bg=FONDO_BATALLA, fg=COLOR_TEXTO)
         self.info_jugador.grid(row=0, column=0)
 
-        self.info_ia = tk.Label(self.canvas_combate, text=f"{self.ia_poke.nombre} - {self.ia_poke.ps} PS",
-                                font=("Press Start 2P", 8), bg=FONDO_BATALLA, fg=COLOR_TEXTO)
+        self.info_ia = tk.Label(self.canvas_combate, font=("Press Start 2P", 8), bg=FONDO_BATALLA, fg=COLOR_TEXTO)
         self.info_ia.grid(row=0, column=1)
 
-        # Zona inferior: ataques
         self.botonera = tk.Frame(self.frame_combate, bg=FONDO_BATALLA)
         self.botonera.pack(side="bottom", pady=10)
+
         self.actualizar_interfaz()
 
     def actualizar_interfaz(self):
         self.info_jugador.config(text=f"{self.pj.nombre} - {self.pj.ps} PS")
         self.info_ia.config(text=f"{self.ia_poke.nombre} - {self.ia_poke.ps} PS")
 
-        nueva_img_jugador = self._mostrar_imagen_pokemon(self.pj.nombre, para_combate=True)
-        nueva_img_ia = self._mostrar_imagen_pokemon(self.ia_poke.nombre, para_combate=True)
-
-        self.img_jugador_label.config(image=nueva_img_jugador)
-        self.img_jugador_label.image = nueva_img_jugador
-
-        self.img_ia_label.config(image=nueva_img_ia)
-        self.img_ia_label.image = nueva_img_ia
+        img_jug = self._mostrar_imagen_pokemon(self.pj.nombre, True)
+        img_ia = self._mostrar_imagen_pokemon(self.ia_poke.nombre, True)
+        self.img_jugador_label.config(image=img_jug)
+        self.img_jugador_label.image = img_jug
+        self.img_ia_label.config(image=img_ia)
+        self.img_ia_label.image = img_ia
 
         for widget in self.botonera.winfo_children():
             widget.destroy()
 
         if not self.jugador.tiene_pokemon_vivo():
-            fin = tk.Label(self.botonera, text="¡Has perdido!", font=FUENTE_NORMAL,
-                           bg=FONDO_BATALLA, fg=COLOR_TEXTO)
-            fin.pack()
+            self.mostrar_equipo_final(self.ia.pokemones, "IA")
             return
-        elif not self.ia.tiene_pokemon_vivo():
-            fin = tk.Label(self.botonera, text="¡Has ganado!", font=FUENTE_NORMAL,
-                           bg=FONDO_BATALLA, fg=COLOR_TEXTO)
-            fin.pack()
+        if not self.ia.tiene_pokemon_vivo():
+            self.mostrar_equipo_final(self.jugador.pokemones, "Jugador")
             return
 
         for ataque in self.pj.ataques:
-            btn = tk.Button(
-                self.botonera, text=ataque.nombre, font=FUENTE_NORMAL,
-                width=15, height=1, bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
-                command=lambda atk=ataque: self.turno_completo(atk)
-            )
-            btn.pack(side="left", padx=5)
+            danio = calcular_danio(self.pj, ataque, self.ia_poke)
+            btn = tk.Button(self.botonera,
+                            text=f"{ataque.nombre}\n({danio} PS)",
+                            font=("Press Start 2P", 8),
+                            wraplength=100,
+                            width=18, height=3,
+                            bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
+                            command=lambda atk=ataque: self.turno_jugador(atk))
+            btn.pack(side="left", padx=5, expand=True)
 
-    def turno_completo(self, ataque_jugador):
-        turno(self.pj, self.ia_poke, ataque_jugador)
+    def turno_jugador(self, ataque):
+        danio = calcular_danio(self.pj, ataque, self.ia_poke)
+        self.label_turno.config(text=f"¡Lanzaste {ataque.nombre} (daño: {danio})!")
+        turno(self.pj, self.ia_poke, ataque)
+
         if self.ia_poke.esta_debilitado():
+            self.label_turno.config(text=f"¡{self.ia_poke.nombre} ha sido debilitado!")
             self.ia.pokemones.remove(self.ia_poke)
             if not self.ia.tiene_pokemon_vivo():
                 self.actualizar_interfaz()
                 return
             self.ia_poke = self.ia.pokemon_activo()
 
-        ataque_ia = elegir_mejor_ataque(self.ia_poke, self.pj)
-        turno(self.ia_poke, self.pj, ataque_ia)
+        self.actualizar_interfaz()
+        self.root.after(2000, self.turno_ia)
+
+    def turno_ia(self):
+        ataque = elegir_mejor_ataque(self.ia_poke, self.pj)
+        danio = calcular_danio(self.ia_poke, ataque, self.pj)
+        self.label_turno.config(text=f"La IA usó {ataque.nombre} (daño: {danio})")
+        turno(self.ia_poke, self.pj, ataque)
+
         if self.pj.esta_debilitado():
+            self.label_turno.config(text=f"¡{self.pj.nombre} ha sido debilitado!")
             self.jugador.pokemones.remove(self.pj)
             if not self.jugador.tiene_pokemon_vivo():
                 self.actualizar_interfaz()
@@ -242,12 +235,32 @@ class JuegoPokemon:
 
         self.actualizar_interfaz()
 
+    def mostrar_equipo_final(self, equipo, ganador):
+        self._limpiar_pantalla()
+        frame = tk.Frame(self.root, bg=FONDO_BATALLA)
+        frame.pack(fill="both", expand=True)
+
+        titulo = tk.Label(frame, text=f"¡{ganador} ha ganado!", font=("Press Start 2P", 18),
+                          bg=FONDO_BATALLA, fg="green" if ganador == "Jugador" else "red")
+        titulo.pack(pady=20)
+
+        galeria = tk.Frame(frame, bg=FONDO_BATALLA)
+        galeria.pack()
+
+        for i, poke in enumerate(equipo):
+            img = self._mostrar_imagen_pokemon(poke.nombre, True)
+            if img:
+                lbl = tk.Label(galeria, image=img, bg=FONDO_BATALLA)
+                lbl.image = img
+                row = i // 2
+                col = i % 2
+                lbl.grid(row=row, column=col, padx=20, pady=10)
+
     def _limpiar_pantalla(self):
         if self.frame_actual:
             self.frame_actual.destroy()
         for widget in self.root.winfo_children():
             widget.pack_forget()
-
 
 if __name__ == "__main__":
     root = tk.Tk()
