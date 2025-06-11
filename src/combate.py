@@ -1,16 +1,19 @@
-
 from estructuras import Pokemon, Ataque, efectividad
 
 def calcular_efectividad(tipo_ataque: str, tipo_objetivo: str) -> float:
-    return efectividad.get((tipo_ataque, tipo_objetivo), 1.0)
+    return efectividad.get((tipo_ataque.lower(), tipo_objetivo.lower()), 1.0)
 
 def calcular_danio(atacante: Pokemon, ataque: Ataque, defensor: Pokemon) -> int:
-    efectividad = calcular_efectividad(ataque.tipo, defensor.tipo)
+    # Calcular efectividad total considerando todos los tipos del defensor
+    efectividad_total = 1.0
+    for tipo_def in defensor.tipos:
+        efectividad_total *= calcular_efectividad(ataque.tipo, tipo_def)
+
     danio_base = ataque.poder
-    danio_total = int(danio_base * efectividad)
+    danio_total = int(danio_base * efectividad_total)
     
     print(f"{atacante.nombre} usa {ataque.nombre} ({ataque.tipo})")
-    print(f"Efectividad: {efectividad}x")
+    print(f"Efectividad total: {efectividad_total:.2f}x")
     print(f"Daño infligido: {danio_total} PS\n")
     
     return danio_total
