@@ -5,12 +5,12 @@ from minimax import elegir_mejor_ataque
 from pokemon import POKEMONES
 
 # 🎨 Estilo tipo Pokémon clásico
-FUENTE_TITULO = ("Micro 5", 36, "bold")
-FUENTE_NORMAL = ("Comic Sans MS", 16)
-FONDO_VENTANA = "#7EC8E3"       # Azul claro estilo Game Boy
-FONDO_BATALLA = "#F8F8F8"       # Gris muy claro
+FUENTE_TITULO = ("Press Start 2P", 36, "bold")
+FUENTE_NORMAL = ("Press Start 2P", 16)
+FONDO_VENTANA = "#7EC8E3"
+FONDO_BATALLA = "#F8F8F8"
 COLOR_TEXTO = "black"
-COLOR_BOTON = "#FFD700"         # Amarillo tipo Pokébola
+COLOR_BOTON = "#FFD700"
 COLOR_BOTON_TEXTO = "black"
 
 class JuegoPokemon:
@@ -20,88 +20,104 @@ class JuegoPokemon:
         self.root.geometry("700x500")
         self.root.resizable(False, False)
         self.root.configure(bg=FONDO_VENTANA)
-
         self.frame_actual = None
         self.pantalla_inicio()
 
     def pantalla_inicio(self):
         self._limpiar_pantalla()
-
         self.frame_inicio = tk.Frame(self.root, bg=FONDO_VENTANA)
         self.frame_inicio.place(relx=0.5, rely=0.5, anchor="center")
 
-        titulo = tk.Label(
-            self.frame_inicio,
-            text="Pokeminmax",
-            font=FUENTE_TITULO,
-            bg=FONDO_VENTANA,
-            fg=COLOR_TEXTO
-        )
+        titulo = tk.Label(self.frame_inicio, text="Pokeminmax", font=FUENTE_TITULO,
+                          bg=FONDO_VENTANA, fg=COLOR_TEXTO)
         titulo.pack(pady=40)
 
         boton_start = tk.Button(
-            self.frame_inicio,
-            text="Start",
-            font=FUENTE_NORMAL,
-            width=15,
-            bg=COLOR_BOTON,
-            fg=COLOR_BOTON_TEXTO,
-            command=self.pantalla_seleccion_equipos
+            self.frame_inicio, text="Start", font=FUENTE_NORMAL, width=15,
+            bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO, command=self.pantalla_seleccion_equipos
         )
         boton_start.pack()
-
         self.frame_actual = self.frame_inicio
 
     def pantalla_seleccion_equipos(self):
         self._limpiar_pantalla()
 
+        self.nombres_pokemon = list(POKEMONES.keys())
+        self.indice_actual = 0
+        self.seleccion_jugador = []
+        self.seleccion_ia = []
+        self.seleccion_actual = []
+
+        self.fase = "jugador"
+        self.pokemon_num = 1
+
         self.frame_seleccion = tk.Frame(self.root, bg=FONDO_VENTANA)
         self.frame_seleccion.place(relx=0.5, rely=0.5, anchor="center")
 
-        tk.Label(
-            self.frame_seleccion,
-            text="Selecciona 4 Pokémon para ti",
-            font=FUENTE_NORMAL,
-            bg=FONDO_VENTANA,
-            fg=COLOR_TEXTO
-        ).pack(pady=5)
+        self.titulo_seleccion = tk.Label(self.frame_seleccion, text="Selecciona tu Pokémon 1",
+                                         font=FUENTE_NORMAL, bg=FONDO_VENTANA, fg=COLOR_TEXTO)
+        self.titulo_seleccion.pack(pady=20)
 
-        self.seleccion_jugador = [tk.StringVar(value=list(POKEMONES.keys())[i]) for i in range(4)]
-        for var in self.seleccion_jugador:
-            tk.OptionMenu(self.frame_seleccion, var, *POKEMONES.keys()).pack()
+        self.label_pokemon = tk.Label(self.frame_seleccion,
+                                      text=self.nombres_pokemon[self.indice_actual],
+                                      font=FUENTE_NORMAL,
+                                      bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
+                                      width=20, height=2, relief="raised", bd=3)
+        self.label_pokemon.pack(pady=10)
 
-        tk.Label(
-            self.frame_seleccion,
-            text="Selecciona 4 Pokémon para la IA",
-            font=FUENTE_NORMAL,
-            bg=FONDO_VENTANA,
-            fg=COLOR_TEXTO
-        ).pack(pady=10)
+        botones_frame = tk.Frame(self.frame_seleccion, bg=FONDO_VENTANA)
+        botones_frame.pack()
 
-        self.seleccion_ia = [tk.StringVar(value=list(POKEMONES.keys())[i+4]) for i in range(4)]
-        for var in self.seleccion_ia:
-            tk.OptionMenu(self.frame_seleccion, var, *POKEMONES.keys()).pack()
+        self.btn_up = tk.Button(botones_frame, text="⬆", font=FUENTE_NORMAL,
+                                width=8, bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
+                                command=lambda: self.cambiar_pokemon(-1))
+        self.btn_up.grid(row=0, column=0, padx=10)
 
-        tk.Button(
-            self.frame_seleccion,
-            text="Iniciar Combate",
-            font=FUENTE_NORMAL,
-            bg=COLOR_BOTON,
-            fg=COLOR_BOTON_TEXTO,
-            command=self.iniciar_combate
-        ).pack(pady=20)
+        self.btn_down = tk.Button(botones_frame, text="⬇", font=FUENTE_NORMAL,
+                                  width=8, bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
+                                  command=lambda: self.cambiar_pokemon(1))
+        self.btn_down.grid(row=0, column=1, padx=10)
+
+        self.btn_confirmar = tk.Button(self.frame_seleccion, text="Confirmar Pokémon",
+                                       font=FUENTE_NORMAL, bg=COLOR_BOTON,
+                                       fg=COLOR_BOTON_TEXTO, command=self.confirmar_pokemon)
+        self.btn_confirmar.pack(pady=20)
 
         self.frame_actual = self.frame_seleccion
+
+    def cambiar_pokemon(self, delta):
+        self.indice_actual = (self.indice_actual + delta) % len(self.nombres_pokemon)
+        self.label_pokemon.config(text=self.nombres_pokemon[self.indice_actual])
+
+    def confirmar_pokemon(self):
+        seleccionado = self.nombres_pokemon[self.indice_actual]
+        self.seleccion_actual.append(POKEMONES[seleccionado])
+
+        if self.pokemon_num < 4:
+            self.pokemon_num += 1
+            self.titulo_seleccion.config(
+                text=f"Selecciona tu Pokémon {self.pokemon_num}" if self.fase == "jugador"
+                     else f"Selecciona Pokémon de IA {self.pokemon_num}")
+        else:
+            if self.fase == "jugador":
+                self.seleccion_jugador = self.seleccion_actual.copy()
+                self.fase = "ia"
+                self.pokemon_num = 1
+                self.seleccion_actual.clear()
+                self.titulo_seleccion.config(text="Selecciona Pokémon de IA 1")
+            else:
+                self.seleccion_ia = self.seleccion_actual.copy()
+                self.iniciar_combate()
+                return
+
+        self.indice_actual = 0
+        self.label_pokemon.config(text=self.nombres_pokemon[self.indice_actual])
 
     def iniciar_combate(self):
         self._limpiar_pantalla()
 
-        # Obtener listas de Pokémon seleccionados
-        pokes_jugador = [POKEMONES[var.get()] for var in self.seleccion_jugador]
-        pokes_ia = [POKEMONES[var.get()] for var in self.seleccion_ia]
-
-        self.jugador = Entrenador("Jugador", pokes_jugador)
-        self.ia = Entrenador("IA", pokes_ia)
+        self.jugador = Entrenador("Jugador", self.seleccion_jugador)
+        self.ia = Entrenador("IA", self.seleccion_ia)
 
         self.pj = self.jugador.pokemon_activo()
         self.ia_poke = self.ia.pokemon_activo()
@@ -110,11 +126,8 @@ class JuegoPokemon:
         self.frame_combate.place(relx=0.5, rely=0.5, anchor="center")
 
         self.label_estado = tk.Label(
-            self.frame_combate,
-            text="",
-            font=FUENTE_NORMAL,
-            bg=FONDO_BATALLA,
-            fg=COLOR_TEXTO
+            self.frame_combate, text="", font=FUENTE_NORMAL,
+            bg=FONDO_BATALLA, fg=COLOR_TEXTO
         )
         self.label_estado.pack(pady=20)
 
@@ -140,12 +153,8 @@ class JuegoPokemon:
 
         for ataque in self.pj.ataques:
             btn = tk.Button(
-                self.botonera,
-                text=ataque.nombre,
-                font=FUENTE_NORMAL,
-                width=20,
-                bg=COLOR_BOTON,
-                fg=COLOR_BOTON_TEXTO,
+                self.botonera, text=ataque.nombre, font=FUENTE_NORMAL,
+                width=20, bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
                 command=lambda atk=ataque: self.turno_completo(atk)
             )
             btn.pack(pady=3)
@@ -158,7 +167,6 @@ class JuegoPokemon:
 
         ataque_ia = elegir_mejor_ataque(self.ia_poke, self.pj)
         turno(self.ia_poke, self.pj, ataque_ia)
-
         self.actualizar_interfaz()
 
     def _limpiar_pantalla(self):
