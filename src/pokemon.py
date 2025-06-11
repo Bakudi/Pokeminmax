@@ -1,6 +1,7 @@
 from estructuras import Pokemon
 from ataques import *
 
+
 #sets basicos
 #set 1
 bulbasaur = Pokemon("Bulbasaur", "Planta", 170, [latigo_cepa, placaje,picotazo_venenoso])
@@ -97,3 +98,4 @@ POKEMONES = {
     
 }
 
+__all__ = ["POKEMONES"]

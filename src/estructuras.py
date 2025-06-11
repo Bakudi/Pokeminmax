@@ -278,19 +278,24 @@ class Pokemon:
     """
     Representa un Pokémon con nombre, tipo(s), etapa evolutiva, y ataques.
     """
-    def __init__(self, nombre, tipos, etapa, ataques=None):
+    def __init__(self, nombre, tipos, ps, ataques=None):
         self.nombre = nombre
         self.tipos = tipos if isinstance(tipos, list) else [tipos]
-        self.etapa = etapa
+        self.ps = ps  # ← ¡esta línea es clave!
+        self.etapa = 1  # puedes mantenerlo fijo o usar otro parámetro si lo deseas
         self.ataques = ataques if ataques is not None else []
 
     def agregar_ataque(self, ataque):
         self.ataques.append(ataque)
 
+    def esta_debilitado(self):
+        return self.ps <= 0
+
     def __str__(self):
         tipos_str = "/".join(self.tipos)
         ataques_str = ", ".join(ataque.nombre for ataque in self.ataques)
-        return f"{self.nombre} ({tipos_str}, Etapa {self.etapa}) - Ataques: {ataques_str}"
+        return f"{self.nombre} ({tipos_str}, {self.ps} PS) - Ataques: {ataques_str}"
+
 
 class Entrenador:
     """

@@ -1,6 +1,7 @@
 # minimax.py
 
 from estructuras import Pokemon, Ataque
+from estructuras import efectividad
 from combate import calcular_danio
 import copy
 
@@ -19,16 +20,38 @@ class EstadoCombate:
 
 
 def evaluar_estado(estado: EstadoCombate) -> int:
-    """
-    Evalúa un estado del combate desde la perspectiva de la IA.
-    """
     if estado.pokemon_ia.ps <= 0:
-        return -1000  # Derrota
+        return -10000  # Derrota grave
     if estado.pokemon_jugador.ps <= 0:
-        return 1000   # Victoria
+        return 10000   # Victoria segura
 
-    # Heurística simple: diferencia de PS
-    return estado.pokemon_ia.ps - estado.pokemon_jugador.ps
+    score = 0
+
+    # 1. Diferencia de PS (peso principal)
+    score += (estado.pokemon_ia.ps - estado.pokemon_jugador.ps) * 2
+
+    # 2. Mejor ataque posible de la IA
+    mejor_danio = 0
+    for ataque in estado.pokemon_ia.ataques:
+        for tipo_objetivo in estado.pokemon_jugador.tipos:
+            efect = efectividad.get((ataque.tipo.lower(), tipo_objetivo.lower()), 1.0)
+            danio_estimado = ataque.poder * efect
+            mejor_danio = max(mejor_danio, danio_estimado)
+    score += int(mejor_danio)  # Valoramos que la IA tenga ataques fuertes disponibles
+
+    # 3. Castigo si el jugador tiene ventaja de tipo contra la IA
+    ventaja_jugador = 0
+    for ataque in estado.pokemon_jugador.ataques:
+        for tipo_ia in estado.pokemon_ia.tipos:
+            efect = efectividad.get((ataque.tipo.lower(), tipo_ia.lower()), 1.0)
+            ventaja_jugador = max(ventaja_jugador, efect)
+    if ventaja_jugador >= 2.0:
+        score -= 20  # Penaliza si el jugador tiene ataques súper efectivos
+    elif ventaja_jugador == 0.5:
+        score += 10  # Bonus si el jugador solo tiene ataques poco efectivos
+
+    return score
+
 
 
 def simular_ataque(estado: EstadoCombate, es_ia: bool, ataque: Ataque) -> EstadoCombate:
