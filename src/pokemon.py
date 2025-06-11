@@ -23,7 +23,7 @@ ekans = Pokemon("Ekans", "Veneno", 120, [picotazo_venenoso, placaje, ascuas])
 
 #sets medios
 #set 1
-jinx = Pokemon("Jynx", "Hielo", 200, [rayo_hielo, golpe_cuerpo, sombra_vil])
+jynx = Pokemon("Jynx", "Hielo", 200, [rayo_hielo, golpe_cuerpo, sombra_vil])
 magmar = Pokemon("Magmar", "Fuego", 210, [lanzallamas, golpe_cuerpo, bola_sombra])
 electabuzz = Pokemon("Electabuzz", "Eléctrico", 200, [chispa, golpe_cuerpo, pulso_dragon])
 scyther = Pokemon("Scyther", "Bicho", 190, [tijera_x, golpe_cuerpo, tornado])
@@ -53,7 +53,7 @@ golem = Pokemon("Golem", "Roca", 410, [roca_afilada, terremoto, abocajarro])
 machamp = Pokemon("Machamp", "Lucha", 390, [trueno, abocajarro, roca_afilada])
 #set 3
 dragonite = Pokemon("Dragonite", "Dragón", 400, [trueno, pajaro_osado, cometa_draco])
-venasaur = Pokemon("Venusaur", "Planta", 410, [rayo_solar, bomba_lodo, terremoto])
+venusaur = Pokemon("Venusaur", "Planta", 410, [rayo_solar, bomba_lodo, terremoto])
 charizard = Pokemon("Charizard", "Fuego", 380, [llamarada, pajaro_osado, cometa_draco])
 blastoise = Pokemon("Blastoise", "Agua", 400, [hidrobomba, ventisca, giga_impacto])
 
@@ -70,7 +70,7 @@ POKEMONES = {
     "geodude": geodude,
     "weedle": weedle,
     "ekans": ekans,
-    "jinx": jinx,
+    "jynx": jynx,
     "magmar": magmar,
     "electabuzz": electabuzz,
     "scyther": scyther,
@@ -91,7 +91,7 @@ POKEMONES = {
     "golem": golem,
     "machamp": machamp,
     "dragonite": dragonite,
-    "venasaur": venasaur,
+    "venusaur": venusaur,
     "charizard": charizard,
     "blastoise": blastoise
     
