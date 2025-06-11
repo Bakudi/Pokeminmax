@@ -1,4 +1,8 @@
 import tkinter as tk
+from PIL import Image, ImageTk
+import os
+import unicodedata
+
 from estructuras import Entrenador
 from combate import turno
 from minimax import elegir_mejor_ataque
@@ -56,38 +60,65 @@ class JuegoPokemon:
 
         self.titulo_seleccion = tk.Label(self.frame_seleccion, text="Selecciona tu Pokémon 1",
                                          font=FUENTE_NORMAL, bg=FONDO_VENTANA, fg=COLOR_TEXTO)
-        self.titulo_seleccion.pack(pady=20)
+        self.titulo_seleccion.pack(pady=(10, 10))
+
+        # Imagen del Pokémon
+        self.label_imagen = tk.Label(self.frame_seleccion, bg=FONDO_VENTANA)
+        self.label_imagen.pack(pady=(0, 10))
+        self._mostrar_imagen_pokemon(self.nombres_pokemon[self.indice_actual])
 
         self.label_pokemon = tk.Label(self.frame_seleccion,
                                       text=self.nombres_pokemon[self.indice_actual],
                                       font=FUENTE_NORMAL,
                                       bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
-                                      width=20, height=2, relief="raised", bd=3)
+                                      width=15, height=2, relief="raised", bd=3)
         self.label_pokemon.pack(pady=10)
 
         botones_frame = tk.Frame(self.frame_seleccion, bg=FONDO_VENTANA)
         botones_frame.pack()
 
         self.btn_up = tk.Button(botones_frame, text="⬆", font=FUENTE_NORMAL,
-                                width=8, bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
+                                width=5, bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
                                 command=lambda: self.cambiar_pokemon(-1))
         self.btn_up.grid(row=0, column=0, padx=10)
 
         self.btn_down = tk.Button(botones_frame, text="⬇", font=FUENTE_NORMAL,
-                                  width=8, bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
+                                  width=5, bg=COLOR_BOTON, fg=COLOR_BOTON_TEXTO,
                                   command=lambda: self.cambiar_pokemon(1))
         self.btn_down.grid(row=0, column=1, padx=10)
 
-        self.btn_confirmar = tk.Button(self.frame_seleccion, text="Confirmar Pokémon",
+        self.btn_confirmar = tk.Button(self.frame_seleccion, text="Confirmar",
                                        font=FUENTE_NORMAL, bg=COLOR_BOTON,
-                                       fg=COLOR_BOTON_TEXTO, command=self.confirmar_pokemon)
+                                       fg=COLOR_BOTON_TEXTO, command=self.confirmar_pokemon,
+                                       width=15, height=1, relief="raised", bd=3)
         self.btn_confirmar.pack(pady=20)
 
         self.frame_actual = self.frame_seleccion
 
+    def _formatear_nombre_archivo(self, nombre):
+        nombre = unicodedata.normalize('NFD', nombre).encode('ascii', 'ignore').decode('utf-8')
+        return nombre.lower().replace(" ", "_").replace(".", "")
+
+    def _mostrar_imagen_pokemon(self, nombre):
+        nombre_archivo = self._formatear_nombre_archivo(nombre)
+        base_dir = os.path.dirname(__file__)  # src/
+        ruta = os.path.join(base_dir, "..", "imagenes", f"{nombre_archivo}.png")
+        ruta = os.path.abspath(ruta)
+
+        if os.path.exists(ruta):
+            img = Image.open(ruta)
+            img = img.resize((150, 150), Image.Resampling.LANCZOS)
+            self.imagen_pokemon = ImageTk.PhotoImage(img)
+            self.label_imagen.config(image=self.imagen_pokemon, text="")
+            self.label_imagen.image = self.imagen_pokemon
+        else:
+            self.label_imagen.config(image="", text="Sin imagen")
+
     def cambiar_pokemon(self, delta):
         self.indice_actual = (self.indice_actual + delta) % len(self.nombres_pokemon)
-        self.label_pokemon.config(text=self.nombres_pokemon[self.indice_actual])
+        nuevo_nombre = self.nombres_pokemon[self.indice_actual]
+        self.label_pokemon.config(text=nuevo_nombre)
+        self._mostrar_imagen_pokemon(nuevo_nombre)
 
     def confirmar_pokemon(self):
         seleccionado = self.nombres_pokemon[self.indice_actual]
@@ -112,6 +143,7 @@ class JuegoPokemon:
 
         self.indice_actual = 0
         self.label_pokemon.config(text=self.nombres_pokemon[self.indice_actual])
+        self._mostrar_imagen_pokemon(self.nombres_pokemon[self.indice_actual])
 
     def iniciar_combate(self):
         self._limpiar_pantalla()
