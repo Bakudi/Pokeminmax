@@ -25,7 +25,6 @@ class JuegoPokemon:
         self.root.resizable(False, False)
         self.root.configure(bg=FONDO_VENTANA)
         self.frame_actual = None
-        self.queue_acciones = []
         self.pantalla_inicio()
 
     def pantalla_inicio(self):
@@ -131,16 +130,19 @@ class JuegoPokemon:
         self.label_turno = tk.Label(self.frame_combate, font=FUENTE_NORMAL, bg=FONDO_BATALLA, fg=COLOR_TEXTO)
         self.label_turno.pack(pady=5)
 
-        self.canvas = tk.Frame(self.frame_combate, bg=FONDO_BATALLA)
-        self.canvas.place(relx=0.5, rely=0.4, anchor="center")
+        self.label_info_ataques_ia = tk.Label(self.frame_combate, font=("Press Start 2P", 8), fg="red", bg=FONDO_BATALLA)
+        self.label_info_ataques_ia.pack()
+
+        self.canvas = tk.Frame(self.frame_combate, bg=FONDO_BATALLA, width=700, height=200)
+        self.canvas.pack()
         self.img_jugador_label = tk.Label(self.canvas, bg=FONDO_BATALLA)
-        self.img_jugador_label.grid(row=1, column=0, padx=50)
+        self.img_jugador_label.place(x=100, y=60)
         self.img_ia_label = tk.Label(self.canvas, bg=FONDO_BATALLA)
-        self.img_ia_label.grid(row=1, column=1, padx=50)
+        self.img_ia_label.place(x=400, y=60)
         self.info_jugador = tk.Label(self.canvas, font=("Press Start 2P", 8), bg=FONDO_BATALLA, fg=COLOR_TEXTO)
-        self.info_jugador.grid(row=0, column=0)
+        self.info_jugador.place(x=100, y=20)
         self.info_ia = tk.Label(self.canvas, font=("Press Start 2P", 8), bg=FONDO_BATALLA, fg=COLOR_TEXTO)
-        self.info_ia.grid(row=0, column=1)
+        self.info_ia.place(x=400, y=20)
 
         self.botonera = tk.Frame(self.frame_combate, bg=FONDO_BATALLA)
         self.botonera.pack(side="bottom", pady=10)
@@ -151,6 +153,8 @@ class JuegoPokemon:
     def actualizar_interfaz(self):
         self.info_jugador.config(text=f"{self.pj.nombre} - {self.pj.ps} PS")
         self.info_ia.config(text=f"{self.ia_poke.nombre} - {self.ia_poke.ps} PS")
+        self.label_info_ataques_ia.config(text="IA: " + ", ".join([atk.nombre for atk in self.ia_poke.ataques]))
+
         img_j = self._mostrar_imagen_pokemon(self.pj.nombre)
         img_i = self._mostrar_imagen_pokemon(self.ia_poke.nombre)
         self.img_jugador_label.config(image=img_j)
@@ -162,10 +166,13 @@ class JuegoPokemon:
             w.destroy()
 
         if not self.jugador.tiene_pokemon_vivo():
-            self.mostrar_equipo_final(self.ia.pokemones, "IA")
+            self.label_turno.config(text=f"{self.pj.nombre} ha sido debilitado!")
+            self.root.after(1500, lambda: self.mostrar_equipo_final(self.ia.pokemones, "IA"))
             return
+
         if not self.ia.tiene_pokemon_vivo():
-            self.mostrar_equipo_final(self.jugador.pokemones, "Jugador")
+            self.label_turno.config(text=f"{self.ia_poke.nombre} ha sido debilitado!")
+            self.root.after(1500, lambda: self.mostrar_equipo_final(self.jugador.pokemones, "Jugador"))
             return
 
         for atk in self.pj.ataques:
@@ -179,12 +186,32 @@ class JuegoPokemon:
                           command=lambda a=atk: self.turno_jugador(a))
             b.pack(side="left", padx=5, expand=True)
 
+    def vibrar(self, label, repeticiones=6, distancia=5, intervalo=50, direccion=1, original_x=None):
+        if original_x is None:
+            original_x = label.winfo_x()
+        if repeticiones <= 0:
+            label.place(x=original_x)
+            return
+        desplazamiento = direccion * distancia
+        label.place(x=original_x + desplazamiento)
+        self.root.after(intervalo, lambda: self.vibrar(label, repeticiones - 1, distancia, intervalo, -direccion, original_x))
+
+    def parpadear(self, label, repeticiones=6, intervalo=100):
+        if repeticiones <= 0:
+            label.config(bg=FONDO_BATALLA)
+            return
+        color = "white" if repeticiones % 2 == 0 else FONDO_BATALLA
+        label.config(bg=color)
+        self.root.after(intervalo, lambda: self.parpadear(label, repeticiones - 1, intervalo))
+
     def turno_jugador(self, ataque):
         danio = calcular_danio(self.pj, ataque, self.ia_poke)
         self.label_turno.config(text=f"¡Lanzaste {ataque.nombre} (daño: {danio})!")
         turno(self.pj, self.ia_poke, ataque)
+        self.vibrar(self.img_ia_label)
+        self.parpadear(self.img_ia_label)
         self.actualizar_interfaz()
-        self.root.after(1500, lambda: self._verificar_ia_debilitada())
+        self.root.after(1500, self._verificar_ia_debilitada)
 
     def _verificar_ia_debilitada(self):
         if self.ia_poke.esta_debilitado():
@@ -208,6 +235,8 @@ class JuegoPokemon:
         danio = calcular_danio(self.ia_poke, ataque, self.pj)
         self.label_turno.config(text=f"La IA usó {ataque.nombre} (daño: {danio})")
         turno(self.ia_poke, self.pj, ataque)
+        self.vibrar(self.img_jugador_label)
+        self.parpadear(self.img_jugador_label)
         self.actualizar_interfaz()
         self.root.after(1500, self._verificar_jugador_debilitado)
 
